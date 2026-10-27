@@ -15,14 +15,23 @@ I'm looking for forward-deployed, AI engineering and full-stack AI systems roles
 
 ## Veaja
 
-**An AI receptionist that answers a business's phone calls.** It answers questions from the business's own documents, books appointments and takes orders during the call, and hands staff a summary or an escalation. I lead the seven-person team and own the backend.
+**An AI voice agent that picks up a business's phone and gets the job done.** It talks with callers in real time in Khmer or English, checks stock, holds orders, books appointments and dispatches on-call staff while the caller is still on the line. Every call then ends as a clear record of what happened and who handles the next step. I lead the seven-person team and own the backend.
+
+<a href="https://veaja.dockified.com"><img src="assets/screenshots/veaja-live-call.jpg" alt="A live Veaja call in Khmer. The agent calls query_stock to check inventory, then reserve_hold_sku to hold the item for the caller." width="100%"></a>
+
+<sub>A live call in Khmer. The tags show the agent checking stock (<code>query_stock</code>) and holding the item (<code>reserve_hold_sku</code>) mid-conversation.</sub>
+
+<a href="https://veaja.dockified.com"><img src="assets/screenshots/veaja-outcome.jpg" alt="An after-hours leak call becomes a dispatch: the transcript on the left, and an accepted outcome record on the right naming the on-call plumber who owns the callback." width="100%"></a>
+
+<sub>An after-hours leak call turns into a dispatch. The call ends as a record with the evidence captured, the on-call plumber who owns it and the next action.</sub>
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/architecture/veaja-dark.svg">
   <img alt="Veaja call path: a call arrives by webhook, is verified, recorded once, the agent calls a tool, and the call ends in an outcome." src="assets/architecture/veaja-light.svg" width="100%">
 </picture>
 
-- The agent works through a registry of typed tools for bookings, orders, catalog lookups, knowledge retrieval and call transfer, called while the caller is still on the line.
+- The voice pipeline runs speech-to-text, an LLM and text-to-speech in real time, with Khmer-specific voice routing.
+- The agent works through a registry of typed tools for bookings, orders, catalog lookups, knowledge retrieval and call transfer.
 - Business documents (PDF, DOCX and FAQs) are embedded into pgvector with an HNSW index for retrieval.
 - Every webhook event lands in an inbox keyed on call and event, so a provider retry can't place the same order twice.
 - Overlapping bookings are rejected by a Postgres exclusion constraint, not by application code that has to remember to check.
